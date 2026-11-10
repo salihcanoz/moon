@@ -179,7 +179,7 @@ const I18N = {
     toSun: '☀ Güneş ışığı', svgNew: 'yeni ay', svgFull: 'dolunay', earth: 'Dünya', moon: 'Ay', north: 'K',
     sunOver: '☀ Güneş tepede', moonOver: '🌙 Ay tepede', perigee: 'en yakın', apogee: 'en uzak',
     elong: deg => `Ay, Güneş’in ${deg}° doğusunda`,
-    phases: ['Yeni Ay', 'Hilal (büyüyen)', 'İlk Dördün', 'Şişkin Ay (büyüyen)', 'Dolunay', 'Şişkin Ay (küçülen)', 'Son Dördün', 'Hilal (küçülen)'],
+    phases: ['Yeni Ay', 'Hilal (büyüyen)', 'İlk Dördün', 'Dolunay (büyüyen)', 'Dolunay', 'Dolunay (küçülen)', 'Son Dördün', 'Hilal (küçülen)'],
     phaseMeta: (illum, age, syn) => `%${illum} aydınlık · gün ${age} / ${syn}`,
     banner: (time, rel) => `🌑 Yeni Ay: tam zamanı ${time} (${rel})`,
     days: 'gün', hUnit: 'sa', dUnit: 'g', au: 'AB',
