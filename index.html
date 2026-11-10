@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moon &amp; Earth Positions</title>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#070a14">
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+
+<header>
+  <h1 data-i18n="h1">🌑 Moon &amp; Earth Positions</h1>
+  <div class="right">
+    <div class="sub" data-i18n="hint"></div>
+    <div class="langs" role="group" aria-label="Language / Taal / Sprache / Langue / Dil">
+      <button class="flag" data-lang="tr" title="Türkçe" aria-label="Türkçe">
+        <svg viewBox="0 0 36 24" aria-hidden="true">
+          <rect width="36" height="24" fill="#E30A17"/>
+          <circle cx="12" cy="12" r="6" fill="#fff"/><circle cx="13.5" cy="12" r="4.8" fill="#E30A17"/>
+          <polygon points="14.60,12.00 16.67,11.33 16.67,9.15 17.95,10.91 20.03,10.24 18.75,12.00 20.03,13.76 17.95,13.09 16.67,14.85 16.67,12.67" fill="#fff"/>
+        </svg>
+      </button>
+      <button class="flag" data-lang="nl" title="Nederlands" aria-label="Nederlands">
+        <svg viewBox="0 0 9 6" aria-hidden="true">
+          <rect width="9" height="2" fill="#AE1C28"/><rect y="2" width="9" height="2" fill="#fff"/><rect y="4" width="9" height="2" fill="#21468B"/>
+        </svg>
+      </button>
+      <button class="flag" data-lang="en" title="English" aria-label="English">
+        <svg viewBox="0 0 60 30" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <clipPath id="ukT"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+          <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+          <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+          <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#ukT)" stroke="#C8102E" stroke-width="4"/>
+          <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+          <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+        </svg>
+      </button>
+      <button class="flag" data-lang="de" title="Deutsch" aria-label="Deutsch">
+        <svg viewBox="0 0 5 3" preserveAspectRatio="none" aria-hidden="true">
+          <rect width="5" height="1" fill="#000"/><rect y="1" width="5" height="1" fill="#DD0000"/><rect y="2" width="5" height="1" fill="#FFCE00"/>
+        </svg>
+      </button>
+      <button class="flag" data-lang="fr" title="Français" aria-label="Français">
+        <svg viewBox="0 0 3 2" preserveAspectRatio="none" aria-hidden="true">
+          <rect width="1" height="2" fill="#0055A4"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#EF4135"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<section class="controls">
+  <div class="group">
+    <label for="dt" data-i18n="dateTime">Date &amp; time</label>
+    <input type="datetime-local" id="dt" step="60">
+    <button id="nowBtn" data-i18n="now">Now</button>
+  </div>
+  <div class="group">
+    <button class="new" id="prevNew" data-i18n="prevNewBtn">⏮ Previous new moon</button>
+    <button class="new" id="nextNew" data-i18n="nextNewBtn">Next new moon ⏭</button>
+  </div>
+  <div class="spacer"></div>
+  <div class="group">
+    <button class="primary" id="playBtn">▶ Play</button>
+    <select id="speed" aria-label="Playback speed" data-i18n-aria="speedAria">
+      <option value="0.25" data-i18n="sp6h">6 h / s</option>
+      <option value="1" selected data-i18n="sp1d">1 day / s</option>
+      <option value="3" data-i18n="sp3d">3 days / s</option>
+      <option value="7" data-i18n="sp1w">1 week / s</option>
+    </select>
+  </div>
+  <div class="slider-row">
+    <span class="edge" id="edgeL">−15 d</span>
+    <input type="range" id="slider" min="-360" max="360" step="1" value="0" aria-label="Time offset in hours" data-i18n-aria="sliderAria">
+    <span class="edge" id="edgeR">+15 d</span>
+  </div>
+</section>
+
+<main>
+  <div class="views">
+    <div class="card">
+      <h2 data-i18n="closeTitle">Earth–Moon close-up</h2>
+      <svg id="geo" viewBox="-230 -140 460 270" role="img" aria-label="Moon around Earth with sunlight direction" data-i18n-aria="geoAria"></svg>
+      <div class="legend">
+        <span style="--c:var(--sun)" data-i18n="lgSunDir">Sunlight direction</span>
+        <span style="--c:var(--new)" data-i18n="lgNewPt">New moon point</span>
+        <span style="--c:#3f8f5a" data-i18n="lgEarth">Earth with its 23.4° axis tilt, turning in real time</span>
+        <span class="ln" style="--c:#3a4366" data-i18n="lgOrbit">Moon’s real orbit, seen from 30° above Earth’s orbital plane</span>
+        <span class="ln" style="--c:var(--sun)" data-i18n="lgSunPath12">Sun’s overhead path, ±12 h</span>
+        <span class="ln" style="--c:var(--moon)" data-i18n="lgMoonPath12">Moon’s overhead path, ±12 h</span>
+        <label class="tog" style="--c:#c4aaff"><input type="checkbox" id="moonVis" checked><span data-i18n="moonVis">Where the Moon is above the horizon</span></label>
+      </div>
+    </div>
+    <div class="card wide">
+      <h2 data-i18n="mapTitle">World map: day &amp; night</h2>
+      <svg id="worldMap" viewBox="0 0 720 360" role="img" aria-label="World map with day and night regions, and the points where the Sun and Moon are overhead" data-i18n-aria="mapAria"></svg>
+      <div class="legend">
+        <span style="--c:#4f9a63" data-i18n="lgDay">Daylight</span>
+        <span style="--c:#1a2236" data-i18n="lgNight">Night (twilight bands shaded)</span>
+        <label class="tog" style="--c:#c4aaff"><input type="checkbox" id="moonVisMap" checked><span data-i18n="moonVis">Where the Moon is above the horizon</span></label>
+        <span style="--c:var(--sun)" data-i18n="lgSunOver">Sun directly overhead</span>
+        <span style="--c:var(--moon)" data-i18n="lgMoonOver">Moon directly overhead</span>
+        <span class="ln" style="--c:var(--sun)" data-i18n="lgSunPath">Sun’s path, ±12 h</span>
+        <span class="ln" style="--c:var(--moon)" data-i18n="lgMoonPath">Moon’s path, ±12 h</span>
+      </div>
+      <div class="map-note" id="mapNote"></div>
+    </div>
+  </div>
+
+  <aside>
+    <div class="card">
+      <h2 data-i18n="phaseTitle">Moon phase (from Earth)</h2>
+      <div class="newmoon-banner" id="nmBanner"></div>
+      <div class="phase-wrap">
+        <svg viewBox="-55 -55 110 110" id="phaseSvg" aria-hidden="true"></svg>
+        <div>
+          <div class="phase-name" id="phaseName">—</div>
+          <div class="phase-meta" id="phaseMeta">—</div>
+        </div>
+      </div>
+      <div class="cycle">
+        <div class="cycle-bar"><div class="marker" id="cycleMarker"></div></div>
+        <div class="cycle-labels"><span data-i18n="cNew">New</span><span data-i18n="cFirst">1st Q</span><span data-i18n="cFull">Full</span><span data-i18n="cLast">Last Q</span><span data-i18n="cNew">New</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="details">Details</h2>
+      <dl class="stats">
+        <div><dt data-i18n="stLocal">Local time</dt><dd id="sLocal"></dd></div>
+        <div><dt>UTC</dt><dd id="sUtc"></dd></div>
+        <div><dt data-i18n="stAge">Moon age</dt><dd id="sAge"></dd></div>
+        <div><dt data-i18n="stElong">Elongation (Moon − Sun)</dt><dd id="sElong"></dd></div>
+        <div><dt data-i18n="stSunLon">Sun ecliptic longitude</dt><dd id="sSun"></dd></div>
+        <div><dt data-i18n="stMoonLon">Moon ecliptic longitude</dt><dd id="sMoon"></dd></div>
+        <div><dt data-i18n="stMoonLat">Moon ecliptic latitude</dt><dd id="sLat"></dd></div>
+        <div><dt data-i18n="stDist">Earth–Moon distance</dt><dd id="sDist"></dd></div>
+        <div><dt data-i18n="stAU">Earth–Sun distance</dt><dd id="sAU"></dd></div>
+        <div><dt data-i18n="stSubSun">Sun overhead at</dt><dd id="sSubSun"></dd></div>
+        <div><dt data-i18n="stSubMoon">Moon overhead at</dt><dd id="sSubMoon"></dd></div>
+        <div><dt data-i18n="stPrev">Previous new moon</dt><dd id="sPrev"></dd></div>
+        <div><dt data-i18n="stNext">Next new moon</dt><dd id="sNext"></dd></div>
+        <div><dt data-i18n="stFull">Next full moon</dt><dd id="sFull"></dd></div>
+      </dl>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="upcoming">Upcoming new moons</h2>
+      <ul class="nm-list" id="nmList"></ul>
+    </div>
+  </aside>
+</main>
+
+<footer data-i18n-html="footer"></footer>
+
+<script src="translations.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
