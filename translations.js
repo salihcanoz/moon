@@ -28,8 +28,8 @@ const I18N = {
     stPrev: 'Previous new moon', stNext: 'Next new moon', stFull: 'Next full moon',
     upcoming: 'Upcoming new moons',
     footer: 'Positions come from a simplified version of Meeus’s <em>Astronomical Algorithms</em>, accurate to a few arcminutes (new moon times to within a few minutes). The Moon’s orbit is drawn with its true shape, but Earth and the Moon are enlarged (at this scale Earth would be 5 px wide). Times are shown in your local time zone.',
-    toSun: '☀ to Sun', svgNew: 'new', svgFull: 'full', earth: 'Earth', moon: 'Moon', north: 'N',
-    sunOver: '☀ Sun overhead', moonOver: '🌙 Moon overhead', perigee: 'perigee', apogee: 'apogee',
+    toSun: '☀ Sun', svgNew: 'new', svgFull: 'full', earth: 'Earth', moon: 'Moon', north: 'N',
+    sunOver: 'Sun', moonOver: 'Moon', perigee: 'perigee', apogee: 'apogee',
     elong: deg => `Moon is ${deg}° east of the Sun`,
     phases: ['New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous', 'Full Moon', 'Waning Gibbous', 'Last Quarter', 'Waning Crescent'],
     phaseMeta: (illum, age, syn) => `${illum}% illuminated · day ${age} of ${syn}`,
@@ -66,7 +66,7 @@ const I18N = {
     upcoming: 'Komende nieuwe manen',
     footer: 'De posities komen uit een vereenvoudigde versie van <em>Astronomical Algorithms</em> van Meeus, nauwkeurig tot op enkele boogminuten (tijdstippen van nieuwe maan tot op enkele minuten). De baan van de Maan is in haar werkelijke vorm getekend, maar de Aarde en de Maan zijn vergroot (op deze schaal zou de Aarde 5 px breed zijn). Tijden staan in je lokale tijdzone.',
     toSun: '☀ Zon', svgNew: 'nieuw', svgFull: 'vol', earth: 'Aarde', moon: 'Maan', north: 'N',
-    sunOver: '☀ Zon', moonOver: '🌙 Maan', perigee: 'perigeum', apogee: 'apogeum',
+    sunOver: 'Zon', moonOver: 'Maan', perigee: 'perigeum', apogee: 'apogeum',
     elong: deg => `De Maan staat ${deg}° ten oosten van de Zon`,
     phases: ['Nieuwe maan', 'Wassende sikkel', 'Eerste kwartier', 'Wassende maan', 'Volle maan', 'Afnemende maan', 'Laatste kwartier', 'Afnemende sikkel'],
     phaseMeta: (illum, age, syn) => `${illum}% verlicht · dag ${age} van ${syn}`,
@@ -102,8 +102,8 @@ const I18N = {
     stPrev: 'Vorheriger Neumond', stNext: 'Nächster Neumond', stFull: 'Nächster Vollmond',
     upcoming: 'Kommende Neumonde',
     footer: 'Die Positionen stammen aus einer vereinfachten Fassung von Meeus’ <em>Astronomical Algorithms</em> und sind auf wenige Bogenminuten genau (Neumondzeiten auf wenige Minuten). Die Mondbahn ist in ihrer wahren Form gezeichnet, Erde und Mond sind jedoch vergrößert (in diesem Maßstab wäre die Erde 5 px breit). Zeiten werden in Ihrer lokalen Zeitzone angezeigt.',
-    toSun: '☀ zur Sonne', svgNew: 'neu', svgFull: 'voll', earth: 'Erde', moon: 'Mond', north: 'N',
-    sunOver: '☀ Sonne im Zenit', moonOver: '🌙 Mond im Zenit', perigee: 'Perigäum', apogee: 'Apogäum',
+    toSun: '☀ Sonne', svgNew: 'neu', svgFull: 'voll', earth: 'Erde', moon: 'Mond', north: 'N',
+    sunOver: 'Sonne', moonOver: 'Mond', perigee: 'Perigäum', apogee: 'Apogäum',
     elong: deg => `Der Mond steht ${deg}° östlich der Sonne`,
     phases: ['Neumond', 'Zunehmende Sichel', 'Erstes Viertel', 'Zunehmender Mond', 'Vollmond', 'Abnehmender Mond', 'Letztes Viertel', 'Abnehmende Sichel'],
     phaseMeta: (illum, age, syn) => `${illum} % beleuchtet · Tag ${age} von ${syn}`,
@@ -139,8 +139,8 @@ const I18N = {
     stPrev: 'Nouvelle lune précédente', stNext: 'Prochaine nouvelle lune', stFull: 'Prochaine pleine lune',
     upcoming: 'Prochaines nouvelles lunes',
     footer: 'Les positions proviennent d’une version simplifiée des <em>Astronomical Algorithms</em> de Meeus, précises à quelques minutes d’arc près (les heures de nouvelle lune à quelques minutes près). L’orbite de la Lune est dessinée avec sa forme réelle, mais la Terre et la Lune sont agrandies (à cette échelle, la Terre ferait 5 px de large). Les heures sont affichées dans votre fuseau horaire local.',
-    toSun: '☀ vers le Soleil', svgNew: 'nouvelle', svgFull: 'pleine', earth: 'Terre', moon: 'Lune', north: 'N',
-    sunOver: '☀ Soleil au zénith', moonOver: '🌙 Lune au zénith', perigee: 'périgée', apogee: 'apogée',
+    toSun: '☀ le Soleil', svgNew: 'nouvelle', svgFull: 'pleine', earth: 'Terre', moon: 'Lune', north: 'N',
+    sunOver: 'Soleil', moonOver: 'Lune', perigee: 'périgée', apogee: 'apogée',
     elong: deg => `La Lune est à ${deg}° à l’est du Soleil`,
     phases: ['Nouvelle lune', 'Premier croissant', 'Premier quartier', 'Gibbeuse croissante', 'Pleine lune', 'Gibbeuse décroissante', 'Dernier quartier', 'Dernier croissant'],
     phaseMeta: (illum, age, syn) => `${illum} % éclairée · jour ${age} sur ${syn}`,
@@ -177,7 +177,7 @@ const I18N = {
     upcoming: 'Yaklaşan yeni aylar',
     footer: 'Konumlar, Meeus’un <em>Astronomical Algorithms</em> kitabındaki yöntemlerin sadeleştirilmiş bir sürümünden gelir; birkaç yay dakikası doğruluktadır (yeni ay zamanları birkaç dakika içinde). Ay’ın yörüngesi gerçek biçimiyle çizilmiştir, ancak Dünya ve Ay büyütülmüştür (bu ölçekte Dünya 5 px genişliğinde olurdu). Saatler yerel saat diliminize göre gösterilir.',
     toSun: '☀ Gün ışığı', svgNew: 'yeni ay', svgFull: 'dolunay', earth: 'Dünya', moon: 'Ay', north: 'K',
-    sunOver: '☀ Güneş', moonOver: '🌙 Ay', perigee: 'en yakın', apogee: 'en uzak',
+    sunOver: 'Güneş', moonOver: 'Ay', perigee: 'en yakın', apogee: 'en uzak',
     elong: deg => `Ay, Güneş’in ${deg}° doğusunda`,
     phases: ['Yeni Ay', 'Hilal (büyüyen)', 'İlk Dördün', 'Dolunay (büyüyen)', 'Dolunay', 'Dolunay (küçülen)', 'Son Dördün', 'Hilal (küçülen)'],
     phaseMeta: (illum, age, syn) => `%${illum} aydınlık · gün ${age} / ${syn}`,
@@ -188,3 +188,30 @@ const I18N = {
     eclTitle: lat => `Ay, tutulum düzleminden ${lat}° uzakta`
   }
 };
+
+// Worldwide measurement point, using the thresholds chosen for this app.
+Object.entries({
+  en: ['Islamic new moon', 'First moment after conjunction with elongation (Moon − Sun ecliptic longitude) ≥ 8° and Moon altitude ≥ 5° somewhere on Earth. No sunset condition. The location below has a geometric Moon-centre altitude of 5°.', 'Example location at 5° altitude', '⏮ Previous', 'Next ⏭'],
+  nl: ['Islamitische nieuwe maan', 'Eerste moment na conjunctie met een elongatie (verschil in eclipticale lengte Maan − Zon) ≥ 8° en een maanhoogte ≥ 5° ergens op aarde. Geen zonsondergangvoorwaarde. Op de onderstaande locatie staat het maanmiddelpunt geometrisch 5° boven de horizon.', 'Voorbeeldlocatie bij 5° hoogte', '⏮ Vorige', 'Volgende ⏭'],
+  de: ['Islamischer Neumond', 'Erster Zeitpunkt nach der Konjunktion mit Elongation (ekliptikale Längendifferenz Mond − Sonne) ≥ 8° und Mondhöhe ≥ 5° irgendwo auf der Erde. Keine Sonnenuntergangsbedingung. Am Beispielort steht das Mondzentrum geometrisch 5° über dem Horizont.', 'Beispielort bei 5° Höhe', '⏮ Vorheriger', 'Nächster ⏭'],
+  fr: ['Nouvelle lune islamique', 'Premier instant après la conjonction avec une élongation (différence de longitude écliptique Lune − Soleil) ≥ 8° et une hauteur lunaire ≥ 5° quelque part sur Terre. Sans condition de coucher du Soleil. Au lieu indiqué, le centre de la Lune est géométriquement à 5° au-dessus de l’horizon.', 'Lieu exemple à 5° de hauteur', '⏮ Précédente', 'Suivante ⏭'],
+  tr: ['İslami yeni ay', 'Kavuşumdan sonra uzanımın (Ay − Güneş tutulum boylamı farkı) ≥ 8° ve Ay yüksekliğinin Dünya üzerinde bir yerde ≥ 5° olduğu ilk an. Gün batımı koşulu yoktur. Örnek konumda Ay merkezinin geometrik yüksekliği 5° olur.', '5° yükseklik için örnek konum', '⏮ Önceki', 'Sonraki ⏭']
+}).forEach(([lang, values]) => {
+  ['islamicTitle', 'islamicCriteria', 'islamicLocation', 'prevIslamic', 'nextIslamic'].forEach((key, i) => { I18N[lang][key] = values[i]; });
+});
+
+Object.entries({
+  en: ['At sea', 'Loading country…', 'Country unavailable'],
+  nl: ['Op zee', 'Land wordt geladen…', 'Land niet beschikbaar'],
+  de: ['Auf See', 'Land wird geladen…', 'Land nicht verfügbar'],
+  fr: ['En mer', 'Chargement du pays…', 'Pays indisponible'],
+  tr: ['Denizde', 'Ülke yükleniyor…', 'Ülke bilgisi mevcut değil']
+}).forEach(([lang, values]) => {
+  ['countryAtSea', 'countryLoading', 'countryUnavailable'].forEach((key, i) => { I18N[lang][key] = values[i]; });
+});
+
+I18N.en.countryAtSeaNear = (km, country) => `At sea (about ${km} km from ${country})`;
+I18N.nl.countryAtSeaNear = (km, country) => `Op zee (ca. ${km} km van ${country})`;
+I18N.de.countryAtSeaNear = (km, country) => `Auf See (ca. ${km} km von ${country})`;
+I18N.fr.countryAtSeaNear = (km, country) => `En mer (à environ ${km} km de ${country})`;
+I18N.tr.countryAtSeaNear = (km, country) => `Denizde (${country} kıyısından yaklaşık ${km} km)`;

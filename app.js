@@ -143,6 +143,24 @@
     return t;
   }
 
+  function islamicNewMoon(conjunction) {
+    // Use the same Moon − Sun ecliptic longitude difference as the displayed
+    // elongation. Somewhere on Earth the Moon is always above 5°, so the
+    // worldwide event is the first 8° crossing after conjunction.
+    return findPhase(conjunction, 8, 1);
+  }
+
+  function fiveDegreeLocation(jd) {
+    const m = moon(jd), eq = eclToEq(m.lon, m.lat, obliquity(jd));
+    const lon = wrap180(eq.ra - gmst(jd - DELTA_T));
+    // Geometric topocentric altitude of the Moon's centre, spherical Earth.
+    const z = Math.acos(6378.14 / m.dist * cos(5)) / DEG - 5;
+    // Destination at bearing 90° from the sublunar point.
+    const lat = Math.asin(sin(eq.dec) * cos(z)) / DEG;
+    const delta = Math.atan2(sin(z) * cos(eq.dec), cos(z) - sin(eq.dec) * sin(lat)) / DEG;
+    return [wrap180(lon + delta), lat];
+  }
+
   // ================= Languages =================
   // The texts themselves live in translations.js (loaded before this file) as the global I18N.
   // Start in the browser's language when it is one we have; a choice made in the picker is remembered.
@@ -295,7 +313,7 @@
   // ================= Real Earth (globe + world map) =================
   const HAS_D3 = typeof d3 !== 'undefined' && typeof topojson !== 'undefined';
   const mapSvg = document.getElementById('worldMap');
-  const earth = {};
+  const earth = { countryStatus: HAS_D3 ? 'countryLoading' : 'countryUnavailable' };
   const LAND = '#4f9a63', OCEAN = '#16406e', BORDER = 'rgba(255,255,255,.28)';
 
   if (HAS_D3) {
@@ -348,7 +366,7 @@
       const g = el('g', {}, mapSvg);
       el('circle', { r: 11, fill, opacity: .25 }, g);
       el('circle', { r: 6, fill, stroke: '#000', 'stroke-width': 1 }, g);
-      el('text', { x: 10, y: -10, fill, 'font-size': 12, 'font-weight': 600, 'data-i18n': label }, g);
+      el('text', { x: 10, y: 0, 'dominant-baseline': 'middle', fill, 'font-size': 12, 'font-weight': 600, 'data-i18n': label }, g);
       return g;
     };
     earth.mSun = marker('#ffc94a', 'sunOver');
@@ -360,11 +378,17 @@
         return r.json();
       })
       // The message below is only for a failed download; errors while drawing are not caught here.
-      .catch(() => { $('mapNote').dataset.i18n = 'mapErr'; $('mapNote').textContent = L('mapErr'); })
+      .catch(() => {
+        earth.countryStatus = 'countryUnavailable';
+        $('mapNote').dataset.i18n = 'mapErr'; $('mapNote').textContent = L('mapErr');
+        render();
+      })
       .then(w => {
         if (!w) return;
         const land = topojson.feature(w, w.objects.land);
         const borders = topojson.mesh(w, w.objects.countries, (a, b) => a !== b);
+        earth.countries = topojson.feature(w, w.objects.countries).features;
+        earth.countryCache = null;
         earth.land = land;
         earth.borders = borders;
         render();
@@ -434,6 +458,59 @@
   const fmtLL = ([lon, lat]) =>
     `${lat.toFixed(5)}, ${lon.toFixed(5)}`;   // signed decimal degrees (latitude, longitude), always with a dot so they can be pasted into a map
 
+  // Shortest great-circle distance to a boundary segment, including its interior.
+  function boundaryDistance(point, a, b) {
+    const vector = ([lon, lat]) => [cos(lat) * cos(lon), cos(lat) * sin(lon), sin(lat)];
+    const dot = (u, v) => u.reduce((sum, x, i) => sum + x * v[i], 0);
+    const cross = (u, v) => [u[1]*v[2]-u[2]*v[1], u[2]*v[0]-u[0]*v[2], u[0]*v[1]-u[1]*v[0]];
+    const angle = (u, v) => Math.atan2(Math.hypot(...cross(u, v)), dot(u, v));
+    const p = vector(point), u = vector(a), v = vector(b);
+    const n = cross(u, v), length = Math.hypot(...n);
+    let distance = Math.min(angle(p, u), angle(p, v));
+    if (length < 1e-12) return distance;
+    const normal = n.map(x => x / length), height = dot(p, normal);
+    const projection = p.map((x, i) => x - height * normal[i]);
+    const size = Math.hypot(...projection);
+    if (size < 1e-12) return distance;
+    const q = projection.map(x => x / size);
+    if (angle(u, q) + angle(q, v) <= angle(u, v) + 1e-10) {
+      distance = Math.min(distance, angle(p, q));
+    }
+    return distance;
+  }
+
+  function nearestCountry(point, countries) {
+    let nearest = null, distance = Infinity;
+    for (const country of countries) {
+      const geometry = country.geometry;
+      if (!geometry) continue;
+      const polygons = geometry.type === 'Polygon' ? [geometry.coordinates]
+        : geometry.type === 'MultiPolygon' ? geometry.coordinates : [];
+      for (const polygon of polygons) for (const ring of polygon) {
+        for (let i = 1; i < ring.length; i++) {
+          const d = boundaryDistance(point, ring[i - 1], ring[i]);
+          if (d < distance) { distance = d; nearest = country; }
+        }
+      }
+    }
+    return nearest ? { name: nearest.properties.name, km: distance * 6371.0088 } : null;
+  }
+
+  function locationCountry(point) {
+    if (!earth.countries) return L(earth.countryStatus);
+    const key = point.join(',');
+    if (!earth.countryCache || earth.countryCache.key !== key) {
+      const country = earth.countries.find(feature => d3.geoContains(feature, point));
+      earth.countryCache = {
+        key, name: country ? country.properties.name : null,
+        nearest: country ? null : nearestCountry(point, earth.countries)
+      };
+    }
+    const { name, nearest } = earth.countryCache;
+    if (name) return name;
+    return nearest ? L('countryAtSeaNear', num(Math.round(nearest.km)), nearest.name) : L('countryAtSea');
+  }
+
   // ================= State & UI =================
   const $ = id => document.getElementById(id);
   const dtInput = $('dt'), slider = $('slider');
@@ -454,11 +531,19 @@
   }
 
   let listAnchor = null;
+  let islamicAnchor = null, islamicEvent = null;
   function render() {
     const jd = jdOf(curMs);
     const s = sun(jd), m = moon(jd);
     const e = norm(m.lon - s.lon);
     const prevNew = findPhase(jd, 0, -1), nextNew = findPhase(jd, 0, 1), nextFull = findPhase(jd, 180, 1);
+    if (islamicAnchor === null || Math.abs(islamicAnchor - prevNew) > 1e-4) {
+      islamicAnchor = prevNew;
+      islamicEvent = islamicNewMoon(prevNew);
+    }
+    $('islamicTime').textContent = fmtShort(msOf(islamicEvent)) + ' (' + relDays(msOf(islamicEvent), curMs) + ')';
+    const exampleLocation = fiveDegreeLocation(islamicEvent);
+    $('islamicLocation').textContent = locationCountry(exampleLocation) + ' · ' + fmtLL(exampleLocation);
     const age = jd - prevNew;
     const isNew = Math.abs(wrap180(e)) < 6;
 
@@ -618,6 +703,20 @@
     setBase(msOf(findPhase(jdOf(curMs) - 0.01, 0, -1)));
   });
   $('nextNew').addEventListener('click', () => { stop(); setBase(msOf(findPhase(jdOf(curMs) + 0.001, 0, 1))); });
+
+  for (const [id, dir] of [['prevIslamic', -1], ['nextIslamic', 1]]) {
+    $(id).addEventListener('click', () => {
+      stop();
+      const jd = jdOf(curMs), epsilon = 1 / 86400;
+      let conjunction = findPhase(jd, 0, -1);
+      let event = islamicNewMoon(conjunction);
+      if (dir < 0 ? event >= jd - epsilon : event <= jd + epsilon) {
+        conjunction = findPhase(conjunction + (dir < 0 ? -1 : 1), 0, dir);
+        event = islamicNewMoon(conjunction);
+      }
+      setBase(msOf(event));
+    });
+  }
 
   let playing = false, last = 0, raf = 0;
   const playBtn = $('playBtn');
